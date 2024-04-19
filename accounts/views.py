@@ -27,6 +27,6 @@ def logout(request):
     return redirect("index")
 
 def signup(request):
-    form = UserCreationform()
+    form = UserCreationForm()
     context = {"form":form}
     return render(request, "accounts/signup.html")
