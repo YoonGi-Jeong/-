@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
@@ -9,3 +10,12 @@ class CustomUserChangeForm(UserChangeForm):
             "last_name",
             "email",
         ]
+
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.fields.get("password"):
+            password_help_text = (
+                "비밀 번호 변경 하기 " '<a href="{}">바꾸기</a>'
+            ).format(f"{reverse('accounts:change_password')}")
+            self.fields["password"].help_text = password_help_text
