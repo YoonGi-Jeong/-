@@ -39,7 +39,9 @@ def article_detail(request, pk):
 @login_required
 def create(request):
     if request.method == "POST":
-        form = ArticleForm(request.POST)
+    
+        files = request.FILES
+        form = ArticleForm(request.POST,request.FILES)
         if form.is_valid():
             article = form.save()
             return redirect("articles:article_detail", article.pk)
