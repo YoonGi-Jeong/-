@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth.forms import UserCreationForm
 
 @require_http_methods(["GET","POST"])
 def login(request):
@@ -24,3 +25,8 @@ def logout(request):
     if request.user.is_authenticated:
         auth_logout(request)
     return redirect("index")
+
+def signup(request):
+    form = UserCreationform()
+    context = {"form":form}
+    return render(request, "accounts/signup.html")

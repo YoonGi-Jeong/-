@@ -54,7 +54,7 @@ def delete(request, pk):
     if request.user.is_authenticated:
         article = get_object_or_404(Article=pk)
         article.delete()
-    return redirect("articles:articles")
+    return redirect("articles:articles") 
 
 
 def update(request, pk):
