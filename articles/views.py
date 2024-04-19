@@ -33,9 +33,11 @@ def articles(request):
 def article_detail(request, pk):
     article = get_object_or_404(Article, pk=pk)
     comment_form = CommentForm()
+    comment = article.comments.all().order_by("-pk")
     context = {
         "article": article,
         "comment_form": comment_form,
+        "comments": comment,
     }
     return render(request, "articles/article_detail.html", context)
 
@@ -89,6 +91,11 @@ def comment_create(request, pk):
         comment = form.save(commit=False)
         comment.article = article
         comment.save()
-    return redirect("articles:article_detail", pk=pk)
+    return redirect("articles:article_detail", article.pk)
 
 
+@require_POST
+def comment_delete(request, pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comment.delete()
+    return redirect("articles:article_detail", pk)

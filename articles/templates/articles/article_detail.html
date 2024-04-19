@@ -30,6 +30,10 @@
     <ul>
         {% for comment in comments %}
         <li>{{comment.content}}</li>
+        <form action="{% url 'articles:comment_delete' article.pk comment.pk%}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="삭제">
+        </form>
         {% endfor %}
     </ul>
 {% endblock %}
