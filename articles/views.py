@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Article
-from .forms import ArticleForm
+from .models import Article, Comment
+from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 
@@ -31,17 +31,21 @@ def articles(request):
 
 
 def article_detail(request, pk):
-    article = Article.objects.get(pk=pk)
-    context = {"article": article}
+    article = get_object_or_404(Article, pk=pk)
+    comment_form = CommentForm()
+    context = {
+        "article": article,
+        "comment_form": comment_form,
+    }
     return render(request, "articles/article_detail.html", context)
 
 
 @login_required
 def create(request):
     if request.method == "POST":
-    
+
         files = request.FILES
-        form = ArticleForm(request.POST,request.FILES)
+        form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
             article = form.save()
             return redirect("articles:article_detail", article.pk)
@@ -51,12 +55,13 @@ def create(request):
     context = {"form": form}
     return render(request, "articles/create.html", context)
 
+
 @require_POST
 def delete(request, pk):
     if request.user.is_authenticated:
         article = get_object_or_404(Article=pk)
         article.delete()
-    return redirect("articles:articles") 
+    return redirect("articles:articles")
 
 
 def update(request, pk):
@@ -74,3 +79,16 @@ def update(request, pk):
         "article": article,
     }
     return render(request, "articles/update.html", context)
+
+
+@require_POST
+def comment_create(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.article = article
+        comment.save()
+    return redirect("articles:article_detail", pk=pk)
+
+
